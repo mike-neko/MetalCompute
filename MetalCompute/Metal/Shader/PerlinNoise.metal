@@ -30,10 +30,6 @@ static float3 fade(float3 t) {
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-static float lerp(float a, float b, float x) {
-    return a + x * (b - a);
-}
-
 static float4 perm2d(constant float4* texture, float2 uv) {
     return texture[int(uv.x) + int(uv.y) * TEX_SIZE];
 }
@@ -53,23 +49,23 @@ static float inoise(constant float4* perm, constant float4* grad, float3 p) {
     float3 f = fade(p);
     const float one = 1.f / TEX_SIZE;
     float4 AA = perm2d(perm, P.xy) + float4(P.z / TEX_SIZE, P.z / TEX_SIZE, P.z / TEX_SIZE, P.z / TEX_SIZE);
-    return lerp(lerp(lerp(gradperm(grad, AA.x, p),
-                          gradperm(grad, AA.z, p + float3(-1, 0, 0)),
-                          f.x),
-                     lerp(gradperm(grad, AA.y, p + float3(0, -1, 0)),
-                          gradperm(grad, AA.w, p + float3(-1, -1, 0)),
-                          f.x),
-                     f.y),
+    return mix(mix(mix(gradperm(grad, AA.x, p),
+                       gradperm(grad, AA.z, p + float3(-1, 0, 0)),
+                       f.x),
+                   mix(gradperm(grad, AA.y, p + float3(0, -1, 0)),
+                       gradperm(grad, AA.w, p + float3(-1, -1, 0)),
+                       f.x),
+                   f.y),
                 
-                lerp(lerp(gradperm(grad, AA.x + one, p + float3(0, 0, -1)),
-                          gradperm(grad, AA.z + one, p + float3(-1, 0, -1)),
-                          f.x),
-                     lerp(gradperm(grad, AA.y + one, p + float3(0, -1, -1)),
-                          gradperm(grad, AA.w + one, p + float3(-1, -1, -1)),
-                          f.x),
-                     f.y),
+                mix(mix(gradperm(grad, AA.x + one, p + float3(0, 0, -1)),
+                        gradperm(grad, AA.z + one, p + float3(-1, 0, -1)),
+                        f.x),
+                    mix(gradperm(grad, AA.y + one, p + float3(0, -1, -1)),
+                        gradperm(grad, AA.w + one, p + float3(-1, -1, -1)),
+                        f.x),
+                    f.y),
                 f.z);
-}
+
 
 kernel void perlinNoise(const device NoiseParameter& param [[ buffer(0) ]],
                         constant float4* permData [[ buffer(1) ]],
