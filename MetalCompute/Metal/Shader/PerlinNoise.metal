@@ -65,7 +65,7 @@ static float inoise(constant float4* perm, constant float4* grad, float3 p) {
                         f.x),
                     f.y),
                 f.z);
-
+}
 
 kernel void perlinNoise(const device NoiseParameter& param [[ buffer(0) ]],
                         constant float4* permData [[ buffer(1) ]],
