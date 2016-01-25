@@ -120,7 +120,6 @@ class Render: NSObject, MTKViewDelegate {
 
             commandBuffer.presentDrawable(mtkView.currentDrawable!)
             commandBuffer.commit()
-            commandBuffer.waitUntilCompleted()
             postRender()
             Render.current.activeBufferNumber = (Render.current.activeBufferNumber + 1) % Render.BufferCount
         }
